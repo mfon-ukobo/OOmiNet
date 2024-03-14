@@ -10,15 +10,24 @@ using OOmiNet.Models;
 namespace OOmiNet;
 public static class OomiRecordHelper
 {
-	public static T TryConvertTo<T>(this OomiRecord record) where T : OomiRecord, new()
+	/// <summary>
+	/// Converts an <see cref="OomiRecord"/> to an object of type <typeparamref name="T"/>
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="record"></param>
+	/// <param name="includeDictionaryValues">Set to false for performance reasons</param>
+	/// <returns></returns>
+	public static T TryConvertTo<T>(this OomiRecord record, bool includeDictionaryValues = false) where T : OomiRecord, new()
 	{
 		T obj = new();
 
-		// put thisin if we want to copy the dictionary items
-		/*foreach (var item in record)
+		if (includeDictionaryValues)
 		{
-			obj[item.Key] = item.Value;
-		}*/
+			foreach (var item in record)
+			{
+				obj[item.Key] = item.Value;
+			}
+		}
 
 		var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
 			.Where(x => x.GetCustomAttribute<OomiPropertyAttribute>() != null)
