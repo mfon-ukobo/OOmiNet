@@ -5,11 +5,11 @@ using OOmiNet.Tests.Models;
 
 namespace OOmiNet.Tests;
 
-public class UnitTest1 : IClassFixture<CustomWebApplicationFactory<Program>>
+public class GetOomiRecordTests : IClassFixture<CustomWebApplicationFactory<Program>>
 {
 	private readonly IOomiService _oomiService;
 
-	public UnitTest1(IOomiService oomiService)
+	public GetOomiRecordTests(IOomiService oomiService)
 	{
 		_oomiService = oomiService;
 	}
