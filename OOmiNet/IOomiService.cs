@@ -4,5 +4,5 @@ namespace OOmiNet;
 
 public interface IOomiService
 {
-	Task<OomiResponse<T>> GetApiResponse<T>(OomiGetRequest request) where T : OomiRecord;
+	Task<OomiResponse<T>> GetApiResponse<T>(OomiGetRequest request) where T : OomiRecord, new();
 }

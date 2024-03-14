@@ -8,18 +8,26 @@ using System.Threading.Tasks;
 using OOmiNet.Models;
 
 namespace OOmiNet;
-public class OomiRecordHelper
+public static class OomiRecordHelper
 {
-	public T TryConvertTo<T>() where T : OomiRecord, new()
+	public static T TryConvertTo<T>(this OomiRecord record) where T : OomiRecord, new()
 	{
 		T obj = new();
 
-		var properties = typeof(T).GetProperties(BindingFlags.Public).Where(x => x.CanWrite);
+		// put thisin if we want to copy the dictionary items
+		/*foreach (var item in record)
+		{
+			obj[item.Key] = item.Value;
+		}*/
+
+		var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+			.Where(x => x.GetCustomAttribute<OomiPropertyAttribute>() != null)
+			.Where(x => x.CanWrite && x.SetMethod != null);
 
 		foreach (var property in properties)
 		{
-			var value = obj.TryGetValue(property.Name, out var valueObj) ? valueObj : null;
-			property.SetValue(obj, value, null);
+			var value = record.TryGetValue(property.Name, out var valueObj) ? valueObj : null;
+			property.SetValue(obj, value);
 		}
 
 		return obj;

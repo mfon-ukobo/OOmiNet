@@ -31,7 +31,7 @@ internal class OomiService : IOomiService
 		_logger = logger;
 	}
 
-	public async Task<OomiResponse<T>> GetApiResponse<T>(OomiGetRequest request) where T : OomiRecord
+	public async Task<OomiResponse<T>> GetApiResponse<T>(OomiGetRequest request) where T : OomiRecord, new()
 	{
 		try
 		{
@@ -44,7 +44,12 @@ internal class OomiService : IOomiService
 
 			var jsonString = await response.Content.ReadAsStringAsync();
 			var model = Deserialize<OomiResponse<T>>(jsonString)!;
-			return model;
+			return new OomiResponse<T>
+			{
+				Details = model.Details,
+				Error = model.Error,
+				Records = model.Records.Select(x => x.TryConvertTo<T>()).ToList()
+			};
 		}
 		catch (Exception ex)
 		{

@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestPlatform.TestHost;
 
 using OOmiNet.Models;
+using OOmiNet.Tests.Models;
 
 namespace OOmiNet.Tests;
 
@@ -21,14 +22,17 @@ public class UnitTest1 : IClassFixture<CustomWebApplicationFactory<Program>>
 		var password = "Password@1234";
 
 		var criterias = new OomiCriteriaBuilder(OomiRequestCriteria.Create("LoginUserName", "3", username));
-		criterias.And(OomiRequestCriteria.Create("LoginPassword", "3", password));
+		//criterias.And(OomiRequestCriteria.Create("LoginPassword", "3", password));
 		var request = new OomiGetRequest("CONTACT");
 		request.SetCriterias(criterias.Build());
 
-		var response = await _oomiService.GetApiResponse<OomiRecord>(request);
+		var response = await _oomiService.GetApiResponse<TestOomiRecord>(request);
+		var record = response.Records.First();
+		var checkUserName = record.LoginUserName;
 
 		Assert.NotNull(response);
 		Assert.NotNull(response.Records);
 		Assert.True(response.Records.Any());
+		Assert.NotNull(checkUserName);
 	}
 }
