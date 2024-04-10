@@ -23,7 +23,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build --configuration Release --no-restore --output "./package"
     #- name: Test
       #run: dotnet test --no-build --verbosity normal
     - name: Pack
@@ -34,8 +34,5 @@ jobs:
       with:
         nuget-version: latest
 
-    - name: NuGet push
-      uses: edumserrano/nuget-push@v1.2.2
-      with:
-        api-key: oy2fi4iy67mfv77sib2aguty7b2uxrnu7ddcsc6yaoca7m
-        nuget-package: "**/*.nupkg"
+    - name: Pack
+      run: dotnet nuget push "./package/*" -k "oy2fi4iy67mfv77sib2aguty7b2uxrnu7ddcsc6yaoca7m" -s "https://api.nuget.org/v3/index.json" --skip-duplicate
