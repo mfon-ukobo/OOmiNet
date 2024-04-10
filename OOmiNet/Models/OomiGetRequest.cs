@@ -4,8 +4,6 @@ namespace OOmiNet.Models;
 
 public class OomiGetRequest
 {
-
-
 	[SetsRequiredMembers]
 	public OomiGetRequest(string entityName, string fields = "*")
 	{

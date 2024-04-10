@@ -31,7 +31,7 @@ internal class OomiService : IOomiService
 		_logger = logger;
 	}
 
-	public async Task<OomiResponse<T>> GetApiResponse<T>(OomiGetRequest request) where T : OomiRecord, new()
+	public async Task<OomiResponse<T>> GetAsync<T>(OomiGetRequest request) where T : OomiRecord, new()
 	{
 		try
 		{
@@ -58,6 +58,41 @@ internal class OomiService : IOomiService
 		}
 	}
 
+	public async Task<OomiResponse<T>> InsertAsync<T>(T request)
+		where T : OomiInsertRecord, new()
+	{
+		return await InsertAsync<T, T>(request);
+	}
+
+	public async Task<OomiResponse<TResult>> InsertAsync<TRequest, TResult>(TRequest request)
+		where TRequest : OomiInsertRecord, new()
+		where TResult : OomiRecord, new()
+	{
+		try
+		{
+			string endpoint = "api/oomi/InsertAPI";
+			var requestJson = JsonConvert.SerializeObject(request.ToDictionary());
+			var content = new StringContent(requestJson, Encoding.UTF8, MediaTypeNames.Application.Json);
+			var response = await _client.PostAsync(endpoint, content);
+
+			response.EnsureSuccessStatusCode();
+
+			var jsonString = await response.Content.ReadAsStringAsync();
+			var model = Deserialize<OomiResponse<TResult>>(jsonString)!;
+			return new OomiResponse<TResult>
+			{
+				Details = model.Details,
+				Error = model.Error,
+				Records = model.Records.Select(x => x.TryConvertTo<TResult>()).ToList()
+			};
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error retrieving response for {Request}", Serialize(request));
+			throw;
+		}
+	}
+
 	private static string GetSignature(DateTime dateTime, string secretKey)
 	{
 		var variables = new string[] { dateTime.ToString("yyyy-MM-dd HH:mm:ss") };
@@ -68,6 +103,7 @@ internal class OomiService : IOomiService
 		using var hmac = new HMACSHA256(secretBytes);
 		byte[] hash = hmac.ComputeHash(valueBytes);
 		string signature = Convert.ToBase64String(hash);
+
 		return signature;
 	}
 

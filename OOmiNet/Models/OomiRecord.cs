@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace OOmiNet.Models;
-public class OomiRecord : Dictionary<string, object?>
+public abstract class OomiRecord : Dictionary<string, object?>
 {
 	public string RecordId
 	{
@@ -29,4 +29,10 @@ public class OomiRecord : Dictionary<string, object?>
 	{
 		TryAdd(key, value);
 	}
+}
+
+public abstract class OomiInsertRecord : OomiRecord
+{
+	[OomiProperty]
+	public abstract string EntityName { get; }
 }

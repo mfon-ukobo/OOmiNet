@@ -41,4 +41,20 @@ public static class OomiRecordHelper
 
 		return obj;
 	}
+
+	public static Dictionary<string, object?> ToDictionary<T>(this T record) where T : OomiRecord
+	{
+		var dict = new Dictionary<string, object?>();
+
+		var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+			.Where(x => x.GetCustomAttribute<OomiPropertyAttribute>() != null);
+
+		foreach (var property in properties)
+		{
+			var value = property.GetValue(record);
+			dict.TryAdd(property.Name, value);
+		}
+
+		return dict;
+	}
 }
