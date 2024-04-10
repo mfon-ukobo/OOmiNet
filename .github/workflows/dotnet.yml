@@ -26,3 +26,16 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - name: Pack
+      run: dotnet pack OOmiNet --no-build 
+
+    - name: Setup NuGet.exe for use with actions
+      uses: NuGet/setup-nuget@v2.0.0
+      with:
+        nuget-version: latest
+
+    - name: NuGet push
+      uses: edumserrano/nuget-push@v1.2.2
+      with:
+        api-key: oy2fi4iy67mfv77sib2aguty7b2uxrnu7ddcsc6yaoca7m
+        nuget-package: "**/*.nupkg"
