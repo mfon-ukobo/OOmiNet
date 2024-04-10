@@ -1,4 +1,4 @@
-# OOmiNet
+# OOmiNet ![deployment](https://github.com/mfon-ukobo/OOmiNet/actions/workflows/dotnet.yml/badge.svg)
 
 ## Register OOmi
 You can register the service in DI
